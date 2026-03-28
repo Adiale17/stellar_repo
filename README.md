@@ -4,13 +4,52 @@
 
 ---
 
-## Problem
+## Project Description
 
-Campus communities lack a simple way to reward peer tutoring, freelance gigs, or creative contributions.
+Coin is a Soroban smart contract deployed on the Stellar blockchain that functions as a campus-issued currency token. The campus admin (a university treasury or institution) mints Coin tokens and distributes them to students. Students can then freely transfer tokens to tip peer tutors, pay for freelance gigs, or reward creative contributions — all settled on-chain with no bank account required.
 
-## Solution
+---
 
-A campus currency token on Stellar enables tipping, micro-payments, and creator monetization among students. Coin is a custom token managed by a Soroban smart contract — the campus admin (treasury or institution) mints tokens, and students transfer them freely to tip tutors, pay for gigs, or support creators, all on-chain with no bank account required.
+## Project Vision
+
+To build a borderless, inclusive micro-economy inside campus communities across Southeast Asia — where every student contribution, whether tutoring, freelancing, or creating content, has real on-chain value. Coin removes the friction of traditional payments and gives students a verifiable, tamper-proof record of their campus economic activity on Stellar.
+
+---
+
+## Key Features
+
+- **Mint** — Admin issues Coin tokens to students (campus treasury controls supply)
+- **Transfer** — Students tip tutors, pay for gigs, or reward creators instantly on-chain
+- **Balance** — Any address can check their Coin balance at any time
+- **Total Supply** — Transparent view of how many Coin tokens are in circulation
+- **Duplicate-proof** — Smart contract enforces correct balances and prevents overspending
+- **3 passing unit tests** — Happy path, edge case, and state verification all covered
+
+---
+
+## Deployed Smart Contract Details
+
+| Field | Value |
+|---|---|
+| **Network** | Stellar Testnet |
+| **Contract ID** | `CDVZKWDSCXLCXKNVFSOMBYEQNEYONMEZICZNGICARCVAMNWB6QUY3OBW` |
+| **Stellar Expert** | https://stellar.expert/explorer/testnet/contract/CDVZKWDSCXLCXKNVFSOMBYEQNEYONMEZICZNGICARCVAMNWB6QUY3OBW |
+| **Stellar Lab** | https://lab.stellar.org/r/testnet/contract/CDVZKWDSCXLCXKNVFSOMBYEQNEYONMEZICZNGICARCVAMNWB6QUY3OBW |
+
+### Block Explorer Screenshot
+
+![Deployed Contract on Stellar Expert](screenshots/contract_explorer.png)
+
+---
+
+## Future Scope
+
+- **Redemption layer** — Allow students to redeem Coin tokens for real USDC via Stellar's built-in DEX
+- **Trustline integration** — Issue Coin as a proper Stellar custom asset with trustline requirements
+- **Web front-end** — Student dashboard showing wallet balance, transaction history, and tip buttons
+- **Leaderboard** — On-chain ranking of top contributors by Coin earned
+- **DAO governance** — Let students vote on token supply and campus treasury decisions via Soroban
+- **Mobile app** — QR-code based tipping for face-to-face campus transactions
 
 ---
 
@@ -34,20 +73,6 @@ University students in Southeast Asia (Philippines, Indonesia, Vietnam) who tuto
 ## Core Feature (MVP)
 
 `transfer(from, to, amount)` — a student sends Coin tokens directly to a peer tutor, freelancer, or creator. The contract verifies the sender has enough balance, debits them, and credits the recipient. One transaction proves the full campus micro-payment loop end-to-end.
-
----
-
-## Constraints
-
-| Dimension | Selection |
-|---|---|
-| Region | SEA (Southeast Asia) |
-| User Type | Students, Freelancers, Creators |
-| Complexity | Soroban required, No-code friendly UI |
-
-## Theme
-
-**Education** → Campus Currency + Tip Economy + Creator Monetization
 
 ---
 
@@ -111,12 +136,6 @@ stellar contract deploy \
   --wasm target/wasm32-unknown-unknown/release/coin.wasm \
   --source my-key \
   --network testnet
-# → Copy the Contract ID (starts with C...)
-```
-
-Verify on Stellar Expert:
-```
-https://stellar.expert/explorer/testnet/contract/<YOUR_CONTRACT_ID>
 ```
 
 ---
@@ -126,30 +145,30 @@ https://stellar.expert/explorer/testnet/contract/<YOUR_CONTRACT_ID>
 ```bash
 # Initialise with admin address
 stellar contract invoke \
-  --id <CONTRACT_ID> --source my-key --network testnet \
+  --id CDVZKWDSCXLCXKNVFSOMBYEQNEYONMEZICZNGICARCVAMNWB6QUY3OBW --source my-key --network testnet \
   -- init \
-  --admin GADMIN000000000000000000000000000000000000000000000000
+  --admin <YOUR_ADDRESS>
 
 # Mint 100 Coin to a student
 stellar contract invoke \
-  --id <CONTRACT_ID> --source my-key --network testnet \
+  --id CDVZKWDSCXLCXKNVFSOMBYEQNEYONMEZICZNGICARCVAMNWB6QUY3OBW --source my-key --network testnet \
   -- mint \
-  --to GSTUDENT0000000000000000000000000000000000000000000000 \
+  --to <STUDENT_ADDRESS> \
   --amount 100
 
 # Student tips a tutor 30 Coin
 stellar contract invoke \
-  --id <CONTRACT_ID> --source my-key --network testnet \
+  --id CDVZKWDSCXLCXKNVFSOMBYEQNEYONMEZICZNGICARCVAMNWB6QUY3OBW --source my-key --network testnet \
   -- transfer \
-  --from GSTUDENT0000000000000000000000000000000000000000000000 \
-  --to GTUTOR00000000000000000000000000000000000000000000000000 \
+  --from <STUDENT_ADDRESS> \
+  --to <TUTOR_ADDRESS> \
   --amount 30
 
 # Check a balance
 stellar contract invoke \
-  --id <CONTRACT_ID> --source my-key --network testnet \
+  --id CDVZKWDSCXLCXKNVFSOMBYEQNEYONMEZICZNGICARCVAMNWB6QUY3OBW --source my-key --network testnet \
   -- balance \
-  --account GTUTOR00000000000000000000000000000000000000000000000000
+  --account <ADDRESS>
 ```
 
 ---
@@ -157,10 +176,12 @@ stellar contract invoke \
 ## Project Structure
 
 ```
-coin/
+stellar_repo/
 ├── src/
-│   ├── lib.rs      # Soroban smart contract
-│   └── test.rs     # Unit tests (3 tests)
+│   ├── lib.rs              # Soroban smart contract
+│   └── test.rs             # Unit tests (3 tests)
+├── screenshots/
+│   └── contract_explorer.png  # Block explorer screenshot
 ├── Cargo.toml
 └── README.md
 ```
